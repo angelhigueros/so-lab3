@@ -15,6 +15,12 @@ int sudoku[SUDOKU_SIZE][SUDOKU_SIZE];
 
 // Función para verificar las filas
 int check_rows() {
+
+    
+	omp_set_nested(1);
+	omp_set_num_threads(SUDOKU_SIZE);
+
+	#pragma omp parallel for private(x) schedule(dynamic)
     for (int i = 0; i < SUDOKU_SIZE; i++) {
         int nums[SUDOKU_SIZE + 1] = {0};
         for (int j = 0; j < SUDOKU_SIZE; j++) {
@@ -29,6 +35,11 @@ int check_rows() {
 
 // Función para verificar las columnas
 int check_columns() {
+
+    omp_set_nested(1);
+	omp_set_num_threads(SUDOKU_SIZE);
+
+	#pragma omp parallel for private(x) schedule(dynamic)
     for (int i = 0; i < SUDOKU_SIZE; i++) {
         int nums[SUDOKU_SIZE + 1] = {0};
         for (int j = 0; j < SUDOKU_SIZE; j++) {
@@ -43,6 +54,10 @@ int check_columns() {
 
 // Función para verificar los subarreglos de 3x3
 int check_subgrids() {
+    omp_set_nested(1);
+	omp_set_num_threads(SUDOKU_SIZE);
+
+	#pragma omp parallel for private(x) schedule(dynamic)
     for (int row = 0; row < SUDOKU_SIZE; row += SUBGRID_SIZE) {
         for (int col = 0; col < SUDOKU_SIZE; col += SUBGRID_SIZE) {
             int nums[SUDOKU_SIZE + 1] = {0};
@@ -67,6 +82,10 @@ void *column_check_thread(void *arg) {
 }
 
 int main(int argc, char *argv[]) {
+
+	omp_set_num_threads(1);
+
+
     if (argc != 2) {
         printf("Uso: %s <archivo_sudoku>\n", argv[0]);
         return 1;
@@ -84,6 +103,9 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    omp_set_nested(1);
+	omp_set_num_threads(9);
+	#pragma omp parallel for private(z) schedule(dynamic)
     for (int i = 0, k = 0; i < SUDOKU_SIZE; i++) {
         for (int j = 0; j < SUDOKU_SIZE; j++, k++) {
             sudoku[i][j] = file_content[k] - '0';
